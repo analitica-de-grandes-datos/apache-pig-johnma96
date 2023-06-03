@@ -34,3 +34,23 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+u = LOAD 'data.csv' USING PigStorage (',') AS (id:INT, 
+firstname: CHARARRAY, 
+surname: CHARARRAY,
+birthday: CHARARRAY,
+color: CHARARRAY,
+quantity: INT); 
+
+formatted_dates = FOREACH u GENERATE birthday AS fecha,
+SUBSTRING(birthday,8,10) AS dia_semana_numero_cer,
+GetDay(ToDate(birthday, 'yyyy-MM-dd')) AS dia_semana_numero,
+Case ToString(ToDate(birthday,'yyyy-MM-dd'), 'EEE')
+When 'Sun' THEN 'dom' When 'Mon' THEN 'lun' When 'Tue' THEN 'mar'
+When 'Wed' THEN 'mie' When 'Thu' THEN 'jue' When 'Fri' THEN 'vie'
+When 'Sat' THEN 'sab' End AS dia_semana_abreviatura,
+Case ToString(ToDate(birthday,'yyyy-MM-dd'), 'EEE')
+When 'Sun' THEN 'domingo' When 'Mon' THEN 'lunes' When 'Tue' THEN 'martes'
+When 'Wed' THEN 'miercoles' When 'Thu' THEN 'jueves' When 'Fri' THEN 'viernes'
+When 'Sat' THEN 'sábado' End AS dia_semana_completo;
+
+STORE formatted_dates INTO 'output' USING PigStorage(',');

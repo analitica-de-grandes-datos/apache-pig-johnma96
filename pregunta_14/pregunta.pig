@@ -20,3 +20,12 @@ $ pig -x local -f pregunta.pig
 
 */
 
+u = LOAD 'data.csv' USING PigStorage (',') AS (id:INT, 
+firstname: CHARARRAY, 
+surname: CHARARRAY,
+birthday: CHARARRAY,
+color: CHARARRAY,
+quantity: INT);
+data = FOREACH u GENERATE color;
+data = FILTER data BY SUBSTRING(LOWER(color), 0, 1) != 'b';
+STORE data INTO 'output' USING PigStorage (',');
