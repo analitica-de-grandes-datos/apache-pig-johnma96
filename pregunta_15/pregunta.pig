@@ -19,4 +19,12 @@ evaluación, pig sera eejcutado ejecutado en modo local:
 $ pig -x local -f pregunta.pig
 
 */
-
+u = LOAD 'data.csv' USING PigStorage (',') AS (id:INT, 
+firstname: CHARARRAY, 
+surname: CHARARRAY,
+birthday: CHARARRAY,
+color: CHARARRAY,
+quantity: INT);
+filtered_data = FILTER u BY color == 'blue' AND SUBSTRING(firstname, 0, 1) == 'z';
+result = FOREACH filtered_data GENERATE firstname, color;
+STORE result INTO 'output' USING PigStorage('\t');

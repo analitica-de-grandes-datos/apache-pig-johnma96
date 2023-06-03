@@ -14,3 +14,8 @@ $ pig -x local -f pregunta.pig
 
         >>> Escriba su respuesta a partir de este punto <<<
 */
+
+data = LOAD 'data.tsv' AS (letter:CHARARRAY, dicc:bag{}, mapa:map[]);
+raw = FOREACH data GENERATE letter, SIZE(dicc) AS count_col2, SIZE(mapa) AS count_col3;
+ordered_data = ORDER raw BY letter,count_col2, count_col3;
+STORE ordered_data INTO 'output' USING PigStorage (',');

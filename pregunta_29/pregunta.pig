@@ -33,4 +33,20 @@ $ pig -x local -f pregunta.pig
 
         >>> Escriba su respuesta a partir de este punto <<<
 */
-
+u = LOAD 'data.csv' USING PigStorage (',') AS (id:INT, 
+firstname: CHARARRAY, 
+surname: CHARARRAY,
+birthday: CHARARRAY,
+color: CHARARRAY,
+quantity: INT); 
+formatted_dates = FOREACH u GENERATE birthday AS fecha, 
+CASE ToString(ToDate(birthday, 'yyyy-MM-dd'), 'MM')
+WHEN '01' THEN 'ene' WHEN '02' THEN 'feb' WHEN '03' THEN 'mar'
+WHEN '04' THEN 'abr' WHEN '05' THEN 'may' WHEN '06' THEN 'jun'
+WHEN '07' THEN 'jul' WHEN '08' THEN 'ago' WHEN '09' THEN 'sep'
+WHEN '10' THEN 'oct' WHEN '11' THEN 'nov' WHEN '12' THEN 'dic'
+ELSE 'unk' END
+AS mes_letras,
+ToString(ToDate(birthday, 'yyyy-MM-dd'), 'MM') AS mes_numeros,
+REPLACE(ToString(ToDate(birthday, 'yyyy-MM-dd'), 'MM'), '^0', '') AS mes_numeros_sin_ceros;
+STORE formatted_dates INTO 'output' USING PigStorage(',');

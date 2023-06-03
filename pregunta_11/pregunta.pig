@@ -32,4 +32,14 @@ $ pig -x local -f pregunta.pig
 
         >>> Escriba su respuesta a partir de este punto <<<
 */
+u = LOAD 'data.csv' USING PigStorage (',') AS (id:INT, 
+firstname: CHARARRAY, 
+surname: CHARARRAY,
+birthday: CHARARRAY,
+color: CHARARRAY,
+quantity: INT);
+transformed_surnames = FOREACH u GENERATE surname AS original_surname, 
+UPPER(surname) AS uppercase_surname, LOWER(surname) AS lowercase_surname;
+sorted_surnames = ORDER transformed_surnames BY original_surname ASC;
+STORE sorted_surnames INTO 'output' USING PigStorage (',');
 
